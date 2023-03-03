@@ -4,6 +4,7 @@ namespace events_manager_api.Application.Services;
 
 public interface IDeveloperService
 {
+    
     /// <summary>
     /// Creates a new developer using the provided <see cref="DeveloperDto"/> object.
     /// </summary>
