@@ -1,6 +1,10 @@
 using System.Globalization;
+using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using events_manager_api.Common.Exceptions;
 using events_manager_api.Domain.Structs;
+using events_manager_api.Infrastructure.Clients.Models;
 
 namespace events_manager_api.Infrastructure.Clients.Impl;
 
@@ -10,6 +14,11 @@ public class WeatherstackClient : IWeatherstackClient
 
     private readonly string baseParamsUrl;
 
+    private readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     public WeatherstackClient(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
@@ -18,35 +27,43 @@ public class WeatherstackClient : IWeatherstackClient
 
 
 
-    public async Task<string?> GetTimeZoneIdByCityName(string cityName)
+    public async Task<string?> GetTimeZoneIdByCityNameAsync(string cityName)
     {
-        var response = await _httpClient.GetAsync(baseParamsUrl + cityName);
+        var content = await this.getPayloadResponseAsync(cityName);
+        var weatherstackResponse = JsonSerializer.Deserialize<WeatherstackSuccessResponse>(content, _jsonOptions);
 
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync();
-
-        var json = JsonDocument.Parse(content);
-
-        var timezoneId = json.RootElement.GetProperty("location").GetProperty("timezone_id").GetString();
-
-        return timezoneId;
+        return weatherstackResponse!.Location.Timezone_id;
     }
 
-    public async Task<Location?> GetLocationByCityName(string cityName)
+    public async Task<Domain.Structs.Location?> GetLocationByCityNameAsync(string cityName)
+    {
+        var content = await this.getPayloadResponseAsync(cityName);
+        var weatherstackResponse = JsonSerializer.Deserialize<WeatherstackSuccessResponse>(content, _jsonOptions);
+
+        var latitudeAsDouble = double.Parse(weatherstackResponse!.Location.Lat, CultureInfo.InvariantCulture);
+        var longitudeAsDouble = double.Parse(weatherstackResponse!.Location.Lon, CultureInfo.InvariantCulture);
+
+        return new Domain.Structs.Location(latitudeAsDouble, longitudeAsDouble);
+    }
+
+    private async Task<string> getPayloadResponseAsync(string cityName)
     {
         var response = await _httpClient.GetAsync(baseParamsUrl + cityName);
 
         response.EnsureSuccessStatusCode();
+
         var content = await response.Content.ReadAsStringAsync();
+        var weatherstackResponse = JsonSerializer.Deserialize<WeatherstackBaseResponse>(content, _jsonOptions);
 
-        var json = JsonDocument.Parse(content);
+        if (weatherstackResponse!.Success is false)
+        {
+            throw new WebApiException(
+                HttpStatusCode.InternalServerError,
+                $"Some internal services not working",
+                JsonSerializer.Deserialize<WeatherstackFailedResponse>(content, _jsonOptions)
+            );
+        }
 
-        var latitude = json.RootElement.GetProperty("location").GetProperty("lat").GetString();
-        var latitudeAsDouble = double.Parse(latitude!, CultureInfo.InvariantCulture);
-
-        var longitude = json.RootElement.GetProperty("location").GetProperty("lon").GetString();
-        var longitudeAsDouble = double.Parse(longitude!, CultureInfo.InvariantCulture);
-
-        return new Location(latitudeAsDouble, longitudeAsDouble);
+        return content;
     }
 }

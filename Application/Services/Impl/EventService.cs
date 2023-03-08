@@ -29,7 +29,7 @@ public class EventService : IEventService
         _eventValidator = eventValidator;
     }
 
-    public async Task<EventRetrievalDto> CreateEvent(EventCreationDto newEvent)
+    public async Task<EventRetrievalDto> CreateEventAsync(EventCreationDto newEvent)
     {
 
         var validationResult = _eventValidator.Validate(newEvent);
@@ -42,7 +42,7 @@ public class EventService : IEventService
 
         if (EventTypeExtensions.FromId(newEvent.EventTypeId) == EventType.In_Person)
         {
-            Location? location = await _weatherstackClient.GetLocationByCityName(newEvent.City!); // At this point, the city is not null 'cause we use the validator to check it
+            Location? location = await _weatherstackClient.GetLocationByCityNameAsync(newEvent.City!); // At this point, the city is not null 'cause we use the validator to check it before
             eventToCreate.Latitude = location!.Value.latitude;
             eventToCreate.Longitude = location!.Value.longitude;
         }
@@ -65,9 +65,9 @@ public class EventService : IEventService
         return _mapper.Map<EventRetrievalDto>(eventToGet);
     }
 
-    public async Task<ICollection<EventRetrievalDto>> GetEvents()
+    public async Task<ICollection<EventRetrievalDto>> GetEventsAsync()
     {
-        var events = await _unitOfWork.EventRepository.GetAll();
+        var events = await _unitOfWork.EventRepository.GetAllAsync();
         return _mapper.Map<ICollection<EventRetrievalDto>>(events);
     }
 }

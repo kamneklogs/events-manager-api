@@ -25,7 +25,7 @@ public class DeveloperController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetDevelopers()
     {
-        var developers = await _developerService.GetDevelopers();
+        var developers = await _developerService.GetDevelopersAsync();
         return Ok(developers);
     }
 
@@ -45,7 +45,7 @@ public class DeveloperController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] DeveloperDto developer)
     {
-        DeveloperDto createdDeveloper = await _developerService.CreateDeveloper(developer);
+        DeveloperDto createdDeveloper = await _developerService.CreateDeveloperAsync(developer);
 
         return CreatedAtAction(
                     nameof(Get),

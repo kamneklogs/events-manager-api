@@ -25,7 +25,7 @@ public class DeveloperService : IDeveloperService
         _validator = validator;
     }
 
-    public async Task<DeveloperDto> CreateDeveloper(DeveloperDto developer)
+    public async Task<DeveloperDto> CreateDeveloperAsync(DeveloperDto developer)
     {
 
         ValidationResult validationResult = _validator.Validate(developer);
@@ -53,9 +53,9 @@ public class DeveloperService : IDeveloperService
         return _mapper.Map<DeveloperDto>(developer);
     }
 
-    public Task<ICollection<DeveloperDto>> GetDevelopers()
+    public Task<ICollection<DeveloperDto>> GetDevelopersAsync()
     {
-        IEnumerable<DeveloperEntity> developers = _unitOfWork.DeveloperRepository.GetAll().Result;
+        IEnumerable<DeveloperEntity> developers = _unitOfWork.DeveloperRepository.GetAllAsync().Result;
         return Task.FromResult(_mapper.Map<ICollection<DeveloperDto>>(developers));
     }
 }

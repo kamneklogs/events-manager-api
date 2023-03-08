@@ -23,9 +23,9 @@ public class Repository<T> : IRepository<T> where T : class, new()
         return includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
     }
 
-    public async Task<T> Get(string id) => await _context.FindAsync<T>(id) ?? Task.FromResult(new T()).Result;
+    public async Task<T> GetAsync(string id) => await _context.FindAsync<T>(id) ?? Task.FromResult(new T()).Result;
 
-    public async Task<IEnumerable<T>> GetAll() => await _context.Set<T>().ToListAsync();
+    public async Task<IEnumerable<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
 
     public IQueryable<T> GetWhere(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
     {

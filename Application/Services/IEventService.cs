@@ -10,7 +10,7 @@ public interface IEventService
     /// </summary>
     /// <param name="eventEntity">The <see cref="EventCreationDto" /> object to create.</param>
     /// <returns> The created <see cref="EventRetrievalDto" /> object.</returns>
-    public Task<EventRetrievalDto> CreateEvent(EventCreationDto eventEntity);
+    public Task<EventRetrievalDto> CreateEventAsync(EventCreationDto eventEntity);
 
     /// <summary>
     /// Returns an event by id using the provided <see cref="EventRetrievalDto" /> object.
@@ -24,5 +24,5 @@ public interface IEventService
     /// Returns all created events
     /// </summary>
     /// <returns>A collection of <see cref="EventRetrievalDto" /> objects.</returns>
-    public Task<ICollection<EventRetrievalDto>> GetEvents();
+    public Task<ICollection<EventRetrievalDto>> GetEventsAsync();
 }

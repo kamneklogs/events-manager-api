@@ -26,7 +26,7 @@ public class EventController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetEvents()
     {
-        var events = await _eventService.GetEvents();
+        var events = await _eventService.GetEventsAsync();
         return Ok(events);
     }
 
@@ -42,7 +42,7 @@ public class EventController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateEvent([FromBody] EventCreationDto eventCreationDto)
     {
-        var eventResult = await _eventService.CreateEvent(eventCreationDto);
+        var eventResult = await _eventService.CreateEventAsync(eventCreationDto);
         return Ok(eventResult);
     }
 
@@ -51,14 +51,14 @@ public class EventController : ControllerBase
     [HttpPost("{eventId}/invitation")]
     public async Task<IActionResult> SendInvitation(int eventId, [FromBody] SendInviteDto sendInviteDto)
     {
-        var eventResult = await _inviteService.CreateInvites(sendInviteDto);
+        var eventResult = await _inviteService.CreateInvitesAsync(sendInviteDto);
         return Ok(eventResult);
     }
 
     [HttpGet("{eventId}/invitation")]
     public async Task<IActionResult> Search(int eventId)
     {
-        var eventResult = await _inviteService.GetInvitesByEventId(eventId);
+        var eventResult = await _inviteService.GetInvitesByEventIdAsync(eventId);
         return Ok(eventResult);
     }
 
@@ -67,14 +67,14 @@ public class EventController : ControllerBase
     [HttpGet("{eventId}/invitation/accepted")]
     public async Task<IActionResult> GetAcceptedInvitations(int eventId)
     {
-        var eventResult = await _inviteService.GetInvitesByEventIdAndStatus(eventId, InviteResponseStatus.Accepted);
+        var eventResult = await _inviteService.GetInvitesByEventIdAndStatusAsync(eventId, InviteResponseStatus.Accepted);
         return Ok(eventResult);
     }
 
     [HttpPut("{eventId}/invitation/{inviteId}/response")]
     public async Task<IActionResult> RespondToInvitation(int eventId /*Validate invite into this event*/, int inviteId, [FromBody] InviteResponseStatus status)
     {
-        var eventResult = await _inviteService.UpdateInviteStatus(eventId, inviteId, status);
+        var eventResult = await _inviteService.UpdateInviteStatusAsync(eventId, inviteId, status);
         return Ok(eventResult);
     }
 }

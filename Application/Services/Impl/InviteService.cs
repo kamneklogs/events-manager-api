@@ -24,7 +24,7 @@ public class InviteService : IInviteService
         _invitationValidator = invitationValidator;
     }
 
-    public async Task<InviteRetrievalDto> CreateInvite(int eventId, string developerEmail)
+    public InviteRetrievalDto CreateInvite(int eventId, string developerEmail)
     {
         EventEntity? associatedEvent = _unitOfWork.EventRepository.Find(e => e.Id == eventId).FirstOrDefault();
         DeveloperEntity? associatedDeveloper = _unitOfWork.DeveloperRepository.Find(d => d.Email == developerEmail).FirstOrDefault();
@@ -52,12 +52,11 @@ public class InviteService : IInviteService
         };
 
         InviteEntity inviteCreated = _unitOfWork.InviteRepository.Add(inviteToCreate).Entity;
-        await _unitOfWork.Complete();
 
         return _mapper.Map<InviteRetrievalDto>(inviteCreated);
     }
 
-    public async Task<ICollection<InviteRetrievalDto>> CreateInvites(SendInviteDto sendInviteDto)
+    public async Task<ICollection<InviteRetrievalDto>> CreateInvitesAsync(SendInviteDto sendInviteDto)
     {
         var validationResult = await _invitationValidator.ValidateAsync(sendInviteDto);
         if (!validationResult.IsValid)
@@ -69,41 +68,43 @@ public class InviteService : IInviteService
 
         foreach (string email in sendInviteDto.DeveloperEmails)
         {
-            invitesCreated.Add(await this.CreateInvite(sendInviteDto.EventId, email));
+            invitesCreated.Add(this.CreateInvite(sendInviteDto.EventId, email));
         }
+
+        await _unitOfWork.Complete(); // see added attr in EF
 
         return invitesCreated;
     }
 
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmail(string developerEmail)
+    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmailAsync(string developerEmail)
     {
         var invites = _unitOfWork.InviteRepository.GetWhere(i => i.DeveloperEntity.Email == developerEmail);
 
         return Task.FromResult(_mapper.Map<ICollection<InviteRetrievalDto>>(invites));
     }
 
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmailAndStatus(string developerEmail, InviteResponseStatus status)
+    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmailAndStatusAsync(string developerEmail, InviteResponseStatus status)
     {
         var invites = _unitOfWork.InviteRepository.GetWhere(i => i.DeveloperEntity.Email == developerEmail && i.Status == status);
 
         return Task.FromResult(_mapper.Map<ICollection<InviteRetrievalDto>>(invites));
     }
 
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventId(int eventId)
+    public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventIdAsync(int eventId)
     {
         var invites = _unitOfWork.InviteRepository.GetWhere(i => i.EventEntity.Id == eventId, i => i.DeveloperEntity, i => i.EventEntity);
 
         return Task.FromResult(_mapper.Map<ICollection<InviteRetrievalDto>>(invites));
     }
 
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventIdAndStatus(int eventId, InviteResponseStatus status)
+    public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventIdAndStatusAsync(int eventId, InviteResponseStatus status)
     {
         var invites = _unitOfWork.InviteRepository.GetWhere(i => i.EventEntity.Id == eventId && i.Status == status, i => i.DeveloperEntity, i => i.EventEntity);
 
         return Task.FromResult(_mapper.Map<ICollection<InviteRetrievalDto>>(invites));
     }
 
-    public async Task<InviteRetrievalDto> UpdateInviteStatus(int eventId, int inviteId, InviteResponseStatus status)
+    public async Task<InviteRetrievalDto> UpdateInviteStatusAsync(int eventId, int inviteId, InviteResponseStatus status)
     {
         InviteEntity? invite = _unitOfWork.InviteRepository.Find(i => i.Id == inviteId, i => i.DeveloperEntity, i => i.EventEntity).FirstOrDefault();
 

@@ -12,14 +12,14 @@ public interface IInviteService
     /// </summary>
     /// <param name="eventId"></param>
     /// <returns>A collection of <see cref="InviteRetrievalDto"/> objects.</returns>
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventId(int eventId);
+    public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventIdAsync(int eventId);
 
     /// <summary>
     /// Returns all invites for a given developer email.
     /// </summary>
     /// <param name="developerEmail"></param>
     /// <returns>A collection of <see cref="InviteRetrievalDto"/> objects.</returns>
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmail(string developerEmail);
+    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmailAsync(string developerEmail);
 
     /// <summary>
     /// Returns all invites for a given event id and status (Accepted, Rejected, Pending).
@@ -27,7 +27,7 @@ public interface IInviteService
     /// <param name="eventId"></param>
     /// <param name="status"></param>
     /// <returns>A collection of <see cref="InviteRetrievalDto"/> objects.</returns>
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventIdAndStatus(int eventId, InviteResponseStatus status);
+    public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventIdAndStatusAsync(int eventId, InviteResponseStatus status);
 
     /// <summary>
     /// Returns all invites for a given developer email and status (Accepted, Rejected, Pending).
@@ -35,7 +35,7 @@ public interface IInviteService
     /// <param name="developerEmail"></param>
     /// <param name="status"></param>
     /// <returns>A collection of <see cref="InviteRetrievalDto"/> objects.</returns>
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmailAndStatus(string developerEmail, InviteResponseStatus status);
+    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmailAndStatusAsync(string developerEmail, InviteResponseStatus status);
 
     /// <summary>
     /// Update the status of an invite for a given event id and invite id and status (Accepted, Rejected, Pending).
@@ -44,7 +44,7 @@ public interface IInviteService
     /// <param name="inviteId"></param>
     /// <param name="status"></param>
     /// <returns>A <see cref="InviteRetrievalDto"/> object.</returns>
-    public Task<InviteRetrievalDto> UpdateInviteStatus(int eventId, int inviteId, InviteResponseStatus status);
+    public Task<InviteRetrievalDto> UpdateInviteStatusAsync(int eventId, int inviteId, InviteResponseStatus status);
 
     /// <summary>
     /// Creates a new invite for a given event id and developer email.
@@ -52,12 +52,12 @@ public interface IInviteService
     /// <param name="eventId"></param>
     /// <param name="developerEmail"></param>
     /// <returns>A <see cref="InviteRetrievalDto"/> object.</returns>
-    Task<InviteRetrievalDto> CreateInvite(int eventId, string developerEmail);
+    InviteRetrievalDto CreateInvite(int eventId, string developerEmail);
 
     /// <summary>
     /// Creates a set of invites for a given event id and a list of developer emails from a <see cref="SendInviteDto"/> object.
     /// </summary>
     /// <param name="sendInviteDto"></param>
     /// <returns></returns>
-    public Task<ICollection<InviteRetrievalDto>> CreateInvites(SendInviteDto sendInviteDto);
+    public Task<ICollection<InviteRetrievalDto>> CreateInvitesAsync(SendInviteDto sendInviteDto);
 }

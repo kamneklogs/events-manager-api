@@ -5,9 +5,9 @@ namespace events_manager_api.Domain.Repositories;
 
 public interface IRepository<T> where T : class, new()
 {
-    Task<T> Get(String id);
+    Task<T> GetAsync(String id);
     IQueryable<T> Find(Expression<Func<T, bool>> predicate,params Expression<Func<T, object>>[] includes);
-    Task<IEnumerable<T>> GetAll();
+    Task<IEnumerable<T>> GetAllAsync();
     IQueryable<T> GetWhere(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
     EntityEntry<T> Add(T entity);
     void AddRange(IEnumerable<T> entities);
